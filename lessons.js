@@ -36,6 +36,29 @@ const LESSONS = [
     ],
   },
   {
+    id: "u3-even-odd",
+    unit: 3,
+    unitName: "Unit 3 · Console & types",
+    title: "Even or odd with %",
+    html: `<p>Define <code>is_even(n)</code> that returns <code>True</code> if <code>n</code> is even, else <code>False</code>.</p>
+<p>Use <code>n % 2 == 0</code>. Return a boolean — do not print.</p>`,
+    starter: "def is_even(n):\n    pass\n",
+    tests: [
+      { kind: "assert", code: "assert is_even(4) is True" },
+      { kind: "assert", code: "assert is_even(7) is False" },
+      { kind: "assert", code: "assert is_even(0) is True" },
+    ],
+  },
+  {
+    id: "u3-power",
+    unit: 3,
+    unitName: "Unit 3 · Console & types",
+    title: "Exponent **",
+    html: `<p>Print <code>2 ** 10</code> on one line (use the <code>**</code> operator).</p>`,
+    starter: "# print 2 to the power 10\n",
+    tests: [{ kind: "stdout", expected: "1024\n" }],
+  },
+  {
     id: "u5-grade",
     unit: 5,
     unitName: "Unit 5 · Conditionals",
@@ -73,6 +96,36 @@ const LESSONS = [
     ],
   },
   {
+    id: "u5-weekend",
+    unit: 5,
+    unitName: "Unit 5 · Conditionals",
+    title: "Weekend with or",
+    html: `<p>Define <code>is_weekend(day)</code> where <code>day</code> is a string like <code>"Sat"</code>.</p>
+<p>Return <code>True</code> if <code>day</code> is <code>"Sat"</code> <strong>or</strong> <code>"Sun"</code>, else <code>False</code>.</p>
+<p>Write two full comparisons: <code>day == "Sat" or day == "Sun"</code> — not <code>day == "Sat" or "Sun"</code>.</p>`,
+    starter: 'def is_weekend(day):\n    pass\n',
+    tests: [
+      { kind: "assert", code: 'assert is_weekend("Sat") is True' },
+      { kind: "assert", code: 'assert is_weekend("Sun") is True' },
+      { kind: "assert", code: 'assert is_weekend("Mon") is False' },
+    ],
+  },
+  {
+    id: "u5-demorgan-rewrite",
+    unit: 5,
+    unitName: "Unit 5 · Conditionals",
+    title: "De Morgan rewrite",
+    html: `<p>Define <code>not_both(a, b)</code> that returns the same result as <code>not (a and b)</code>, but using De Morgan:</p>
+<p><code>(not a) or (not b)</code> where <code>a</code> and <code>b</code> are booleans.</p>`,
+    starter: "def not_both(a, b):\n    pass\n",
+    tests: [
+      { kind: "assert", code: "assert not_both(True, True) is False" },
+      { kind: "assert", code: "assert not_both(True, False) is True" },
+      { kind: "assert", code: "assert not_both(False, False) is True" },
+      { kind: "assert", code: "assert not_both(False, True) == (not (False and True))" },
+    ],
+  },
+  {
     id: "u7-range",
     unit: 7,
     unitName: "Unit 7 · Loops",
@@ -81,6 +134,36 @@ const LESSONS = [
 <p>Use a <code>for</code> loop and <code>range</code>. Expected answer: <code>55</code>.</p>`,
     starter: "total = 0\n# use for and range\n",
     tests: [{ kind: "stdout", expected: "55\n" }],
+  },
+  {
+    id: "u7-range-step",
+    unit: 7,
+    unitName: "Unit 7 · Loops",
+    title: "range with a step",
+    html: `<p>Print each number from <code>range(2, 10, 3)</code> on its own line (three lines total).</p>
+<p>Expected: <code>2</code>, then <code>5</code>, then <code>8</code>.</p>`,
+    starter: "for n in range(2, 10, 3):\n    pass\n",
+    tests: [{ kind: "stdout", expected: "2\n5\n8\n" }],
+  },
+  {
+    id: "u7-continue",
+    unit: 7,
+    unitName: "Unit 7 · Loops",
+    title: "Skip multiples of 3",
+    html: `<p>Print the sum of integers from 1 through 10 <strong>except</strong> multiples of 3 (skip 3, 6, 9).</p>
+<p>Use a <code>for</code> loop and <code>continue</code>. One number on one line. Answer: <code>37</code>.</p>`,
+    starter: "total = 0\nfor n in range(1, 11):\n    pass\n",
+    tests: [{ kind: "stdout", expected: "37\n" }],
+  },
+  {
+    id: "u7-while",
+    unit: 7,
+    unitName: "Unit 7 · Loops",
+    title: "while until target",
+    html: `<p>Start with <code>total = 0</code>. Use a <code>while</code> loop: add <code>7</code> each time until <code>total &gt;= 50</code>, then print <code>total</code> once.</p>
+<p>Expected output: <code>56</code>.</p>`,
+    starter: "total = 0\nwhile total < 50:\n    pass\n",
+    tests: [{ kind: "stdout", expected: "56\n" }],
   },
   {
     id: "u7-break",
@@ -164,6 +247,28 @@ const LESSONS = [
     ],
   },
   {
+    id: "u10-last-char",
+    unit: 10,
+    unitName: "Unit 10 · Strings",
+    title: "Last character",
+    html: `<p><code>word = "PYTHON"</code> is set for you. Print the last character using a <strong>negative index</strong> — one line.</p>`,
+    starter: '# word = "PYTHON"\n',
+    tests: [{ kind: "stdout", setup: 'word = "PYTHON"\n', expected: "N\n" }],
+  },
+  {
+    id: "u10-count-letter",
+    unit: 10,
+    unitName: "Unit 10 · Strings",
+    title: "Count with .count()",
+    html: `<p>Define <code>count_letter(text, ch)</code> that returns how many times character <code>ch</code> appears in <code>text</code>.</p>
+<p>You may use <code>text.count(ch)</code> or your own loop.</p>`,
+    starter: "def count_letter(text, ch):\n    pass\n",
+    tests: [
+      { kind: "assert", code: 'assert count_letter("banana", "a") == 3' },
+      { kind: "assert", code: 'assert count_letter("banana", "z") == 0' },
+    ],
+  },
+  {
     id: "u10-strip-vowels",
     unit: 10,
     unitName: "Unit 10 · Strings",
@@ -204,6 +309,19 @@ const LESSONS = [
     ],
   },
   {
+    id: "u12-sum-list",
+    unit: 12,
+    unitName: "Unit 12 · Lists",
+    title: "Sum a list",
+    html: `<p>Define <code>total(nums)</code> that returns the sum of all numbers in the list. Do not use built-in <code>sum()</code>.</p>`,
+    starter: "def total(nums):\n    pass\n",
+    tests: [
+      { kind: "assert", code: "assert total([1, 2, 3, 4]) == 10" },
+      { kind: "assert", code: "assert total([]) == 0" },
+      { kind: "assert", code: "assert total([5]) == 5" },
+    ],
+  },
+  {
     id: "u12-find-max",
     unit: 12,
     unitName: "Unit 12 · Lists",
@@ -225,6 +343,19 @@ const LESSONS = [
     starter: "# point = (3, 7) is set for you\n",
     tests: [
       { kind: "stdout", setup: "point = (3, 7)\n", expected: "10\n" },
+    ],
+  },
+  {
+    id: "u12-membership",
+    unit: 12,
+    unitName: "Unit 12 · Lists",
+    title: "in operator",
+    html: `<p>Define <code>contains(items, target)</code> that returns <code>True</code> if <code>target</code> is in <code>items</code>, else <code>False</code>.</p>
+<p>Use the <code>in</code> operator.</p>`,
+    starter: "def contains(items, target):\n    pass\n",
+    tests: [
+      { kind: "assert", code: "assert contains([1, 2, 3], 2) is True" },
+      { kind: "assert", code: "assert contains([1, 2, 3], 9) is False" },
     ],
   },
   {
@@ -270,6 +401,55 @@ const LESSONS = [
       { kind: "assert", code: "assert make_row(4, 0) == [0, 0, 0, 0]" },
       { kind: "assert", code: "assert make_row(1, 9) == [9]" },
       { kind: "assert", code: "assert make_row(0, 1) == []" },
+    ],
+  },
+  {
+    id: "u13-build-grid",
+    unit: 13,
+    unitName: "Unit 13 · 2D lists",
+    title: "Build a zero grid",
+    html: `<p>Define <code>make_grid(rows, cols)</code> that returns a 2D list with <code>rows</code> rows and <code>cols</code> columns, every cell <code>0</code>.</p>
+<p>Use the safe pattern: outer loop appends a <strong>new</strong> row list each time (nested loop + <code>append</code>). Do not use <code>[[0]*cols]*rows</code>.</p>`,
+    starter: "def make_grid(rows, cols):\n    grid = []\n    return grid\n",
+    tests: [
+      { kind: "assert", code: "assert make_grid(2, 3) == [[0,0,0],[0,0,0]]" },
+      {
+        kind: "assert",
+        code: "g = make_grid(3, 2); g[0][0] = 1; assert g[1][0] == 0",
+        message: "Each row must be its own list — not shared references",
+      },
+    ],
+  },
+  {
+    id: "u13-set-cell",
+    unit: 13,
+    unitName: "Unit 13 · 2D lists",
+    title: "Change one cell",
+    html: `<p>Define <code>set_cell(grid, row, col, value)</code> that changes <code>grid[row][col]</code> to <code>value</code> and returns nothing meaningful (mutate the grid in place).</p>
+<p>Remember: row first, then column.</p>`,
+    starter: "def set_cell(grid, row, col, value):\n    pass\n",
+    tests: [
+      {
+        kind: "assert",
+        code: "g = [[1,2],[3,4]]; set_cell(g, 1, 0, 99); assert g == [[1,2],[99,4]]",
+      },
+    ],
+  },
+  {
+    id: "u13-print-grid",
+    unit: 13,
+    unitName: "Unit 13 · 2D lists",
+    title: "Print grid row by row",
+    html: `<p><code>grid</code> is set for you. Print every value row by row: numbers on a line separated by spaces, blank line between rows optional but not required.</p>
+<p>Use nested loops. Expected for the sample grid:</p>
+<pre>1 2 3\n4 5 6\n7 8 9</pre>`,
+    starter: "# grid is set for you\n",
+    tests: [
+      {
+        kind: "stdout",
+        setup: "grid = [[1,2,3],[4,5,6],[7,8,9]]\n",
+        expected: "1 2 3\n4 5 6\n7 8 9\n",
+      },
     ],
   },
 
