@@ -136,10 +136,47 @@ if __got != __expected:
   }
 }
 
+function setCodingMode(on) {
+  el("lessonPanel").classList.toggle("hidden", !on);
+  el("mcqPanel").classList.toggle("hidden", on);
+  el("coachPanel").classList.toggle("hidden", !on);
+}
+
+window.setCodingMode = setCodingMode;
+
+function openMcq() {
+  currentId = null;
+  el("welcome").classList.add("hidden");
+  setCodingMode(false);
+  document.querySelectorAll(".lesson-link").forEach((b) => b.classList.remove("active"));
+  const mcqBtn = document.querySelector(".lesson-link[data-mcq]");
+  if (mcqBtn) mcqBtn.classList.add("active");
+  if (window.Mcq) {
+    window.Mcq.active = true;
+    if (window.Mcq.phase === "setup" || !window.Mcq.quiz.length) window.Mcq.renderSetup();
+    else window.Mcq.renderQuestion();
+  }
+}
+
 function buildNav() {
   const nav = el("unitNav");
   nav.innerHTML = "";
   const progress = loadProgress();
+
+  const mcqBlock = document.createElement("div");
+  mcqBlock.className = "unit-block";
+  const mcqLabel = document.createElement("div");
+  mcqLabel.className = "unit-label";
+  mcqLabel.textContent = "MCQ · Mock test";
+  mcqBlock.appendChild(mcqLabel);
+  const mcqBtn = document.createElement("button");
+  mcqBtn.type = "button";
+  mcqBtn.className = "lesson-link";
+  mcqBtn.dataset.mcq = "1";
+  mcqBtn.textContent = "Build 30-question quiz";
+  mcqBtn.addEventListener("click", () => openMcq());
+  mcqBlock.appendChild(mcqBtn);
+  nav.appendChild(mcqBlock);
 
   for (const u of window.UNITS) {
     const block = document.createElement("div");
@@ -168,8 +205,10 @@ function openLesson(id) {
   const lesson = lessonList.find((l) => l.id === id);
   if (!lesson) return;
 
+  if (window.Mcq) window.Mcq.closeToLesson();
+  setCodingMode(true);
+
   el("welcome").classList.add("hidden");
-  el("lessonPanel").classList.remove("hidden");
 
   el("lessonUnit").textContent = lesson.unitName;
   el("lessonTitle").textContent = lesson.title;
@@ -461,6 +500,7 @@ function init() {
   setupEditorKeys();
 
   if (window.Coach) window.Coach.init();
+  if (window.Mcq) window.Mcq.init();
 
   initPythonEngine();
 

@@ -14,7 +14,7 @@
       <div>
         <p class="eyebrow">IB CS HL · Year 1 · Test 1</p>
         <h1>Python practice trainer</h1>
-        <p class="sub">CodeHS test units + <strong>Constructs</strong> (pairs, sets, search). Run your code, then <strong>Check</strong>.</p>
+        <p class="sub">Coding lessons + <strong>MCQ mock</strong> (30 Q) + <strong>Constructs</strong>. Run code, then <strong>Check</strong>.</p>
       </div>
       <div class="loader-badge" id="pyStatus">Starting…</div>
     </div>
@@ -69,6 +69,10 @@
           <button type="button" id="nextBtn" class="ghost">Next →</button>
         </div>
       </article>
+
+      <article id="mcqPanel" class="lesson-panel mcq-panel hidden">
+        <div id="mcqRoot"></div>
+      </article>
     </main>
 
     <aside class="coach-panel" id="coachPanel" aria-label="Code Coach">
@@ -88,6 +92,7 @@
 
   <script src="lessons.js"></script>
   <script src="coach.js"></script>
+  <script src="mcq.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
