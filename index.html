@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IB Python Test 1 — Practice</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="vendor/skulpt.min.js"></script>
+  <script src="vendor/skulpt-stdlib.js"></script>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div>
+        <p class="eyebrow">IB CS HL · Year 1 · Test 1</p>
+        <h1>Python practice trainer</h1>
+        <p class="sub">CodeHS test units + <strong>Constructs</strong> (pairs, sets, search). Run your code, then <strong>Check</strong>.</p>
+      </div>
+      <div class="loader-badge" id="pyStatus">Starting…</div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <nav id="unitNav"></nav>
+    </aside>
+
+    <main class="content">
+      <div id="welcome" class="welcome hidden">
+        <h2>How to use this</h2>
+        <ol>
+          <li>Pick a lesson on the left (or we open the first one for you).</li>
+          <li>Write Python in the editor.</li>
+          <li>Click <strong>Run</strong> or <strong>Check</strong>.</li>
+        </ol>
+      </div>
+
+      <article id="lessonPanel" class="lesson-panel">
+        <div class="lesson-meta">
+          <span class="chip" id="lessonUnit"></span>
+          <span id="lessonProgress"></span>
+        </div>
+        <h2 id="lessonTitle"></h2>
+        <div class="instructions" id="lessonInstructions"></div>
+
+        <p class="editor-hint"><strong>Tab</strong> indents · <strong>Shift+Tab</strong> unindents · <strong>Enter</strong> after <code>if</code>/<code>for</code>/<code>def</code>: adds the next indent level</p>
+        <div class="editor-wrap">
+          <div class="editor-bar">
+            <span>Your code</span>
+            <button type="button" id="resetBtn" class="ghost">Reset starter</button>
+          </div>
+          <textarea id="editor" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="Python code editor"></textarea>
+        </div>
+
+        <div class="actions">
+          <button type="button" id="runBtn" class="secondary">Run</button>
+          <button type="button" id="checkBtn" class="primary">Check</button>
+        </div>
+
+        <div id="outputPanel" class="output-panel hidden">
+          <h3>Output</h3>
+          <pre id="runOutput"></pre>
+        </div>
+
+        <div id="feedback" class="feedback hidden"></div>
+
+        <div class="lesson-nav">
+          <button type="button" id="prevBtn" class="ghost">← Previous</button>
+          <button type="button" id="nextBtn" class="ghost">Next →</button>
+        </div>
+      </article>
+    </main>
+  </div>
+
+  <script src="lessons.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
