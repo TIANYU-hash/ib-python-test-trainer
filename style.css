@@ -71,17 +71,23 @@ h1 {
 .loader-badge.ready { border-color: var(--gold); color: var(--gold); }
 
 .layout {
-  max-width: 1200px;
+  max-width: 1320px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 260px minmax(0, 1fr) 300px;
   gap: 0;
   min-height: calc(100vh - 120px);
+}
+
+@media (max-width: 1100px) {
+  .layout { grid-template-columns: 260px 1fr; }
+  .coach-panel { grid-column: 1 / -1; border-top: 1px solid var(--rule); max-height: 360px; }
 }
 
 @media (max-width: 800px) {
   .layout { grid-template-columns: 1fr; }
   .sidebar { border-right: none; border-bottom: 1px solid var(--rule); max-height: 220px; overflow: auto; }
+  .coach-panel { max-height: none; }
 }
 
 .sidebar {
@@ -306,3 +312,100 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   padding-top: 16px;
   border-top: 1px solid var(--rule);
 }
+
+.coach-panel {
+  background: var(--card);
+  border-left: 1px solid var(--rule);
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.coach-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.coach-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.coach-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.coach-intro {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.coach-concepts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.coach-chip {
+  font-size: 11px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--navy);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.coach-chip:hover { border-color: var(--gold); }
+
+.coach-messages {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 120px;
+  max-height: 420px;
+  padding: 4px 0;
+  margin-bottom: 10px;
+}
+
+.coach-msg {
+  font-size: 13px;
+  line-height: 1.45;
+  padding: 10px 11px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+}
+
+.coach-msg.coach strong { color: var(--navy); }
+
+.coach-msg p { margin: 6px 0 0; }
+.coach-msg ul { margin: 8px 0 0; padding-left: 18px; }
+.coach-msg li { margin-bottom: 4px; }
+
+.coach-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--rule);
+}
+
+.coach-btn { width: 100%; font-size: 13px; padding: 8px 12px; }

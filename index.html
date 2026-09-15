@@ -70,9 +70,24 @@
         </div>
       </article>
     </main>
+
+    <aside class="coach-panel" id="coachPanel" aria-label="Code Coach">
+      <div class="coach-header">
+        <span class="coach-title">Code Coach</span>
+        <span class="coach-tag">Built-in</span>
+      </div>
+      <p class="coach-intro">Hints and nudges for this lesson — not full solutions.</p>
+      <div class="coach-concepts" id="coachConcepts"></div>
+      <div class="coach-messages" id="coachMessages" role="log" aria-live="polite"></div>
+      <div class="coach-actions">
+        <button type="button" id="coachHintBtn" class="secondary coach-btn">Next hint</button>
+        <button type="button" id="coachFocusBtn" class="ghost coach-btn">What to focus on</button>
+      </div>
+    </aside>
   </div>
 
   <script src="lessons.js"></script>
+  <script src="coach.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

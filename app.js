@@ -192,6 +192,8 @@ function openLesson(id) {
   el("outputPanel").classList.add("hidden");
   el("prevBtn").disabled = idx <= 0;
   el("nextBtn").disabled = idx >= lessonList.length - 1;
+
+  if (window.Coach) window.Coach.onLessonOpen(lesson);
 }
 
 function requireLesson() {
@@ -282,6 +284,7 @@ async function onCheck() {
       buildNav();
       openLesson(currentId);
       showFeedback(true, "Correct — nice work.", "All tests passed.");
+      if (window.Coach) window.Coach.onCheckResult(true, code, [], lesson);
     } else {
       showFeedback(
         false,
@@ -293,6 +296,7 @@ async function onCheck() {
           )
           .join("")
       );
+      if (window.Coach) window.Coach.onCheckResult(false, code, failures, lesson);
     }
   } catch (e) {
     showFeedback(false, "Could not run your code", escapeHtml(e.message || String(e)));
@@ -455,6 +459,8 @@ function init() {
   });
 
   setupEditorKeys();
+
+  if (window.Coach) window.Coach.init();
 
   initPythonEngine();
 
