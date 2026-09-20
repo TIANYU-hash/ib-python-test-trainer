@@ -199,29 +199,30 @@ const Mcq = {
   },
 
   maxQuizCount(units) {
-    const n = this.getFilteredPool(units).length;
-    return Math.max(5, n);
+    const hasGen = typeof window.buildGeneratedMcqQuiz === "function";
+    if (hasGen && units.length) return MCQ_FULL_MOCK_SIZE;
+    return Math.max(5, this.getFilteredPool(units).length);
   },
 
   buildQuiz(count, units) {
+    const want = Math.max(5, Math.min(count, MCQ_FULL_MOCK_SIZE));
+    if (typeof window.buildGeneratedMcqQuiz === "function") {
+      const generated = window.buildGeneratedMcqQuiz(want, units);
+      if (generated.length >= want) return generated.slice(0, want);
+    }
     const pool = shuffleArray(this.getFilteredPool(units));
     if (pool.length === 0) return [];
-    const want = Math.max(5, Math.min(count, MCQ_FULL_MOCK_SIZE));
-    if (want <= pool.length) {
-      return pool.slice(0, want);
-    }
+    if (want <= pool.length) return pool.slice(0, want);
     const out = pool.slice();
-    while (out.length < want) {
-      out.push(...shuffleArray(pool));
-    }
+    while (out.length < want) out.push(...shuffleArray(pool));
     return out.slice(0, want);
   },
 
   renderSetup() {
     this.phase = "setup";
     const prefs = loadMcqPrefs();
-    const poolSize = this.getFilteredPool(prefs.units).length;
-    const bankTotal = MCQ_BANK.length;
+    const poolSize = this.maxQuizCount(prefs.units);
+    const genCount = window.MCQ_GENERATOR_FNS ? window.MCQ_GENERATOR_FNS.length : 0;
 
     let unitChecks = "";
     for (const u of MCQ_FILTER_UNITS) {
@@ -233,14 +234,14 @@ const Mcq = {
       <div class="mcq-setup">
         <div class="lesson-meta"><span class="chip">MCQ</span><span>Mock test builder</span></div>
         <h2>Practice Test #3 style (Units 1–9)</h2>
-        <p class="mcq-lead">Bank of <strong>${bankTotal}</strong> questions (10 per unit). Each <strong>Generate</strong> shuffles and picks a fresh set — full mock = <strong>${MCQ_FULL_MOCK_SIZE}</strong> unique from the pool.</p>
+        <p class="mcq-lead"><strong>Generate</strong> builds a new quiz each time (${genCount}+ templates, random numbers/code). Full mock = <strong>${MCQ_FULL_MOCK_SIZE}</strong> fresh questions — not limited to a fixed bank.</p>
 
         <div class="mcq-options">
           <label class="mcq-field">
             <span>Number of questions</span>
-            <input type="number" id="mcqCount" min="5" max="${Math.min(MCQ_FULL_MOCK_SIZE, poolSize)}" value="${Math.min(prefs.count, poolSize, MCQ_FULL_MOCK_SIZE)}" />
+            <input type="number" id="mcqCount" min="5" max="${MCQ_FULL_MOCK_SIZE}" value="${Math.min(prefs.count, MCQ_FULL_MOCK_SIZE)}" />
           </label>
-          <p class="mcq-hint" id="mcqPoolHint">Available from selected units: <strong>${poolSize}</strong> (we shuffle; if you ask for more than available, some may repeat).</p>
+          <p class="mcq-hint" id="mcqPoolHint">Selected units drive which topics appear. Up to <strong>${MCQ_FULL_MOCK_SIZE}</strong> questions per mock.</p>
         </div>
 
         <fieldset class="mcq-units">
@@ -256,22 +257,13 @@ const Mcq = {
 
     const updateHint = () => {
       const units = this.readUnitsFromDom();
-      const avail = this.getFilteredPool(units).length;
-      const maxQ = Math.min(MCQ_FULL_MOCK_SIZE, Math.max(5, avail));
       const countEl = document.getElementById("mcqCount");
-      if (countEl) {
-        countEl.max = String(maxQ);
-        const cur = parseInt(countEl.value || "45", 10);
-        if (cur > maxQ) countEl.value = String(maxQ);
-      }
+      if (countEl) countEl.max = String(MCQ_FULL_MOCK_SIZE);
       const count = parseInt(countEl?.value || "45", 10);
+      const unitN = units.length || MCQ_FILTER_UNITS.length;
       const hint = document.getElementById("mcqPoolHint");
       if (hint) {
-        const uniqueNote =
-          avail >= count
-            ? `Each generate picks <strong>${count}</strong> different questions from ${avail}.`
-            : `Only ${avail} unique — extras may repeat.`;
-        hint.innerHTML = `Pool: <strong>${avail}</strong>. ${uniqueNote}`;
+        hint.innerHTML = `<strong>${unitN}</strong> unit(s) selected · next mock = <strong>${count}</strong> newly generated questions.`;
       }
     };
 
@@ -315,9 +307,7 @@ const Mcq = {
   startFromSetup() {
     const count = parseInt(document.getElementById("mcqCount")?.value || "30", 10);
     const units = this.readUnitsFromDom();
-    const avail = this.getFilteredPool(units).length;
-    const maxQ = Math.min(MCQ_FULL_MOCK_SIZE, Math.max(5, avail));
-    const safeCount = Math.min(maxQ, Math.max(5, count));
+    const safeCount = Math.min(MCQ_FULL_MOCK_SIZE, Math.max(5, count));
     saveMcqPrefs({ count: safeCount, units });
 
     this.quiz = this.buildQuiz(safeCount, units);
