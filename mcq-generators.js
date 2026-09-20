@@ -458,22 +458,26 @@ const MCQ_GENERATOR_FNS = [
 /**
  * @param {number} count
  * @param {number[]} units
+ * @param {Set<string>} [excludeKeys] previously completed questions
  * @returns {GenMcqItem[]}
  */
-function buildGeneratedMcqQuiz(count, units) {
+function buildGeneratedMcqQuiz(count, units, excludeKeys) {
   const unitSet = new Set(units);
   const fns = MCQ_GENERATOR_FNS.filter((g) => unitSet.has(g.unit));
-  const bank =
+  const keyFn = typeof window !== "undefined" && window.mcqQuestionKey ? window.mcqQuestionKey : (it) => "q:" + it.q;
+  const exclude = excludeKeys instanceof Set ? excludeKeys : new Set();
+  const bankAll =
     typeof window !== "undefined" && window.MCQ_BANK
       ? window.MCQ_BANK.filter((q) => unitSet.has(q.unit))
       : [];
+  const bank = bankAll.filter((q) => !exclude.has(keyFn(q)));
   const quiz = [];
-  const seenQ = new Set();
+  const inQuiz = new Set();
 
   if (!fns.length && !bank.length) return [];
 
   let guard = 0;
-  const maxGuard = count * 80;
+  const maxGuard = count * 120;
 
   while (quiz.length < count && guard < maxGuard) {
     guard++;
@@ -488,8 +492,10 @@ function buildGeneratedMcqQuiz(count, units) {
     } else if (bank.length) {
       item = mcqPick(bank);
     }
-    if (!item || seenQ.has(item.q)) continue;
-    seenQ.add(item.q);
+    if (!item) continue;
+    const key = keyFn(item);
+    if (inQuiz.has(item.q) || exclude.has(key)) continue;
+    inQuiz.add(item.q);
     quiz.push(item);
   }
 

@@ -206,11 +206,21 @@ const Mcq = {
 
   buildQuiz(count, units) {
     const want = Math.max(5, Math.min(count, MCQ_FULL_MOCK_SIZE));
+    const exclude = typeof window.loadMcqSeenSet === "function" ? window.loadMcqSeenSet() : new Set();
+    const keyFn = typeof window.mcqQuestionKey === "function" ? window.mcqQuestionKey : (it) => it.id || it.q;
+
     if (typeof window.buildGeneratedMcqQuiz === "function") {
-      const generated = window.buildGeneratedMcqQuiz(want, units);
+      const generated = window.buildGeneratedMcqQuiz(want, units, exclude);
       if (generated.length >= want) return generated.slice(0, want);
+      if (generated.length > 0 && generated.length >= Math.min(want, 5)) {
+        this._lastMcqShortfall = want - generated.length;
+        return generated;
+      }
     }
-    const pool = shuffleArray(this.getFilteredPool(units));
+
+    const pool = shuffleArray(
+      this.getFilteredPool(units).filter((q) => !exclude.has(keyFn(q)))
+    );
     if (pool.length === 0) return [];
     if (want <= pool.length) return pool.slice(0, want);
     const out = pool.slice();
@@ -234,7 +244,8 @@ const Mcq = {
       <div class="mcq-setup">
         <div class="lesson-meta"><span class="chip">MCQ</span><span>Mock test builder</span></div>
         <h2>Practice Test #3 style (Units 1–9)</h2>
-        <p class="mcq-lead"><strong>Generate</strong> builds a new quiz each time (${genCount}+ templates, random numbers/code). Full mock = <strong>${MCQ_FULL_MOCK_SIZE}</strong> fresh questions — not limited to a fixed bank.</p>
+        <p class="mcq-lead"><strong>Generate</strong> builds a new quiz each time (${genCount}+ templates, random numbers/code). Full mock = <strong>${MCQ_FULL_MOCK_SIZE}</strong> questions. After you <strong>Submit</strong> a mock, those items are remembered and skipped in future mocks.</p>
+        <p class="mcq-hint" id="mcqSeenHint">Past questions remembered: <strong>${typeof window.mcqSeenCount === "function" ? window.mcqSeenCount() : 0}</strong></p>
 
         <div class="mcq-options">
           <label class="mcq-field">
@@ -252,6 +263,7 @@ const Mcq = {
         <div class="actions">
           <button type="button" class="primary" id="mcqStartBtn">Generate quiz</button>
           <button type="button" class="ghost" id="mcqQuick30">Quick: new random ${MCQ_FULL_MOCK_SIZE}-question mock</button>
+          <button type="button" class="ghost" id="mcqClearSeen">Clear remembered MCQs</button>
         </div>
       </div>`;
 
@@ -275,6 +287,17 @@ const Mcq = {
     updateHint();
 
     document.getElementById("mcqStartBtn")?.addEventListener("click", () => this.startFromSetup());
+    document.getElementById("mcqClearSeen")?.addEventListener("click", () => {
+      if (typeof window.clearMcqSeenHistory === "function") {
+        window.clearMcqSeenHistory();
+        updateHint();
+        const hint = document.getElementById("mcqSeenHint");
+        if (hint) {
+          hint.innerHTML = 'Past questions remembered: <strong>0</strong> (cleared).';
+        }
+      }
+    });
+
     document.getElementById("mcqQuick30")?.addEventListener("click", () => {
       this.root.querySelectorAll('input[type="checkbox"][data-unit]').forEach((cb) => {
         cb.checked = true;
@@ -310,10 +333,18 @@ const Mcq = {
     const safeCount = Math.min(MCQ_FULL_MOCK_SIZE, Math.max(5, count));
     saveMcqPrefs({ count: safeCount, units });
 
+    this._lastMcqShortfall = 0;
     this.quiz = this.buildQuiz(safeCount, units);
     if (!this.quiz.length) {
-      alert("Select at least one unit with questions.");
+      alert(
+        "No new questions available for those units — you may have completed them all. Use “Clear remembered MCQs” or add more units."
+      );
       return;
+    }
+    if (this._lastMcqShortfall > 0) {
+      alert(
+        `Only ${this.quiz.length} new questions left (need ${safeCount}). Clear remembered MCQs or reduce quiz length.`
+      );
     }
     this.answers = this.quiz.map(() => null);
     this.index = 0;
@@ -379,6 +410,9 @@ const Mcq = {
 
   renderResults() {
     this.phase = "results";
+    if (typeof window.markMcqQuestionsSeen === "function") {
+      window.markMcqQuestionsSeen(this.quiz);
+    }
     let correct = 0;
     let review = "";
 
