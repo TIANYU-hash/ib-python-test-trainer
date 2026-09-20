@@ -155,8 +155,10 @@ function openMcq() {
   if (mcqBtn) mcqBtn.classList.add("active");
   if (window.Mcq) {
     window.Mcq.active = true;
-    if (window.Mcq.phase === "setup" || !window.Mcq.quiz.length) window.Mcq.renderSetup();
-    else window.Mcq.renderQuestion();
+    const phase = window.Mcq.phase;
+    if (phase === "quiz" && window.Mcq.quiz.length) window.Mcq.renderQuestion();
+    else if (phase === "results" && window.Mcq.quiz.length) window.Mcq.renderResults();
+    else window.Mcq.renderSetup();
   }
 }
 
