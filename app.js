@@ -136,18 +136,20 @@ if __got != __expected:
   }
 }
 
-function setCodingMode(on) {
-  el("lessonPanel").classList.toggle("hidden", !on);
-  el("mcqPanel").classList.toggle("hidden", on);
-  el("coachPanel").classList.toggle("hidden", !on);
+/** @param {'coding'|'mcq'|'trace'} mode */
+function setViewMode(mode) {
+  el("lessonPanel").classList.toggle("hidden", mode !== "coding");
+  el("mcqPanel").classList.toggle("hidden", mode !== "mcq");
+  el("traceGuidePanel").classList.toggle("hidden", mode !== "trace");
+  el("coachPanel").classList.toggle("hidden", mode !== "coding");
 }
 
-window.setCodingMode = setCodingMode;
+window.setViewMode = setViewMode;
 
 function openMcq() {
   currentId = null;
   el("welcome").classList.add("hidden");
-  setCodingMode(false);
+  setViewMode("mcq");
   document.querySelectorAll(".lesson-link").forEach((b) => b.classList.remove("active"));
   const mcqBtn = document.querySelector(".lesson-link[data-mcq]");
   if (mcqBtn) mcqBtn.classList.add("active");
@@ -158,10 +160,55 @@ function openMcq() {
   }
 }
 
+function openTraceGuide(lessonId) {
+  currentId = null;
+  el("welcome").classList.add("hidden");
+  setViewMode("trace");
+  if (window.Mcq) window.Mcq.closeToLesson();
+  document.querySelectorAll(".lesson-link").forEach((b) => b.classList.remove("active"));
+  const btn = document.querySelector(`.lesson-link[data-trace="${lessonId}"]`);
+  if (btn) btn.classList.add("active");
+  if (window.TraceGuide) window.TraceGuide.open(lessonId);
+}
+
+window.onTraceGuideOpen = (lessonId) => {
+  document.querySelectorAll(".lesson-link").forEach((b) => {
+    b.classList.toggle("active", b.dataset.trace === lessonId);
+  });
+};
+
+window.rebuildTrainerNav = buildNav;
+
 function buildNav() {
   const nav = el("unitNav");
   nav.innerHTML = "";
   const progress = loadProgress();
+  let traceProgress = {};
+  try {
+    traceProgress = JSON.parse(localStorage.getItem("ib-python-test-trainer-trace-progress") || "{}");
+  } catch {
+    traceProgress = {};
+  }
+
+  if (window.TRACE_GUIDE && window.TRACE_GUIDE.length) {
+    const traceBlock = document.createElement("div");
+    traceBlock.className = "unit-block";
+    const traceLabel = document.createElement("div");
+    traceLabel.className = "unit-label";
+    traceLabel.textContent = "Trace · Read & identify";
+    traceBlock.appendChild(traceLabel);
+    for (const tl of window.TRACE_GUIDE) {
+      const tbtn = document.createElement("button");
+      tbtn.type = "button";
+      tbtn.className = "lesson-link";
+      tbtn.dataset.trace = tl.id;
+      tbtn.textContent = tl.title;
+      if (traceProgress[tl.id]) tbtn.classList.add("done");
+      tbtn.addEventListener("click", () => openTraceGuide(tl.id));
+      traceBlock.appendChild(tbtn);
+    }
+    nav.appendChild(traceBlock);
+  }
 
   const mcqBlock = document.createElement("div");
   mcqBlock.className = "unit-block";
@@ -206,7 +253,7 @@ function openLesson(id) {
   if (!lesson) return;
 
   if (window.Mcq) window.Mcq.closeToLesson();
-  setCodingMode(true);
+  setViewMode("coding");
 
   el("welcome").classList.add("hidden");
 
@@ -500,6 +547,7 @@ function init() {
   setupEditorKeys();
 
   if (window.Coach) window.Coach.init();
+  if (window.TraceGuide) window.TraceGuide.init();
   if (window.Mcq) window.Mcq.init();
 
   initPythonEngine();

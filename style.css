@@ -410,7 +410,58 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .coach-btn { width: 100%; font-size: 13px; padding: 8px 12px; }
 
-.mcq-panel { max-width: 720px; }
+.mcq-panel,
+.trace-panel { max-width: 720px; }
+
+.trace-cfu-section {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 2px solid var(--rule);
+}
+
+.trace-cfu-section h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  color: var(--navy);
+}
+
+.trace-body { margin-bottom: 8px; }
+
+.trace-cfu-block {
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.trace-cfu-block:last-of-type { border-bottom: none; }
+
+.trace-cfu-q {
+  margin: 0 0 10px;
+  font-size: 15px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.trace-score {
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 12px;
+}
+
+.mcq-choice.correct {
+  border-color: var(--ok);
+  background: var(--ok-bg);
+}
+
+.mcq-choice.wrong {
+  border-color: var(--bad);
+  background: var(--bad-bg);
+}
+
+.cfu-ok { color: var(--ok); }
+.cfu-wrong { color: var(--muted); }
+
+.trace-cfu-actions { margin-top: 8px; }
 
 .mcq-lead { color: var(--muted); font-size: 15px; margin: 0 0 16px; }
 
