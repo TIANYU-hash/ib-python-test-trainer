@@ -173,7 +173,7 @@ function buildNav() {
   mcqBtn.type = "button";
   mcqBtn.className = "lesson-link";
   mcqBtn.dataset.mcq = "1";
-  mcqBtn.textContent = "Build 30-question quiz";
+  mcqBtn.textContent = "MCQ mock · Units 1–9 (45 Q)";
   mcqBtn.addEventListener("click", () => openMcq());
   mcqBlock.appendChild(mcqBtn);
   nav.appendChild(mcqBlock);
