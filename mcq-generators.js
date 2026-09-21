@@ -26,6 +26,13 @@ function mcqHash(s) {
   return Math.abs(h).toString(36);
 }
 
+/** Python 3 print(a / b) — `/` is always float (e.g. 24.0). */
+function formatPy3Div(a, b) {
+  const v = a / b;
+  if (Number.isInteger(v)) return `${v}.0`;
+  return String(v);
+}
+
 /** @param {string} correct @param {string[]} wrongs @param {number} unit @param {string} explain */
 function mcqMake(unit, q, correct, wrongs, explain) {
   const uniqWrongs = [...new Set(wrongs.filter((w) => w !== correct))].slice(0, 3);
@@ -113,15 +120,19 @@ const MCQ_GENERATOR_FNS = [
       const a = mcqRi(11, 99);
       const b = mcqRi(2, 9);
       const mod = a % b;
-      const div = a / b;
-      const correct = `${mod} ${div}`;
+      const divStr = formatPy3Div(a, b);
+      const correct = `${mod} ${divStr}`;
       const q = `What is printed?\nprint(${a} % ${b}, ${a} / ${b})`;
       return mcqMake(
         2,
         q,
         correct,
-        [`${Math.floor(a / b)} ${mod}`, `${mod}.0 ${Math.floor(a / b)}`, `${mod} ${Math.floor(a / b)}.0`],
-        `% → ${mod}; / in Python 3 → ${div}.`
+        [
+          `${mod} ${Math.floor(a / b)}`,
+          `${mod}.0 ${divStr}`,
+          `${Math.floor(a / b)} ${mod}`,
+        ],
+        `% → ${mod}; / in Python 3 → ${divStr}.`
       );
     },
   },

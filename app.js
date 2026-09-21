@@ -136,11 +136,12 @@ if __got != __expected:
   }
 }
 
-/** @param {'coding'|'mcq'|'trace'} mode */
+/** @param {'coding'|'mcq'|'trace'|'study'} mode */
 function setViewMode(mode) {
   el("lessonPanel").classList.toggle("hidden", mode !== "coding");
   el("mcqPanel").classList.toggle("hidden", mode !== "mcq");
   el("traceGuidePanel").classList.toggle("hidden", mode !== "trace");
+  el("studyGuidePanel").classList.toggle("hidden", mode !== "study");
   el("coachPanel").classList.toggle("hidden", mode !== "coding");
 }
 
@@ -179,6 +180,23 @@ window.onTraceGuideOpen = (lessonId) => {
   });
 };
 
+function openStudyGuide(lessonId) {
+  currentId = null;
+  el("welcome").classList.add("hidden");
+  setViewMode("study");
+  if (window.Mcq) window.Mcq.closeToLesson();
+  document.querySelectorAll(".lesson-link").forEach((b) => b.classList.remove("active"));
+  const btn = document.querySelector(`.lesson-link[data-study="${lessonId}"]`);
+  if (btn) btn.classList.add("active");
+  if (window.StudyGuide) window.StudyGuide.open(lessonId);
+}
+
+window.onStudyGuideOpen = (lessonId) => {
+  document.querySelectorAll(".lesson-link").forEach((b) => {
+    b.classList.toggle("active", b.dataset.study === lessonId);
+  });
+};
+
 window.rebuildTrainerNav = buildNav;
 
 function buildNav() {
@@ -190,6 +208,25 @@ function buildNav() {
     traceProgress = JSON.parse(localStorage.getItem("ib-python-test-trainer-trace-progress") || "{}");
   } catch {
     traceProgress = {};
+  }
+
+  if (window.STUDY_GUIDE && window.STUDY_GUIDE.length) {
+    const studyBlock = document.createElement("div");
+    studyBlock.className = "unit-block";
+    const studyLabel = document.createElement("div");
+    studyLabel.className = "unit-label";
+    studyLabel.textContent = "Study · Traced examples";
+    studyBlock.appendChild(studyLabel);
+    for (const sl of window.STUDY_GUIDE) {
+      const sbtn = document.createElement("button");
+      sbtn.type = "button";
+      sbtn.className = "lesson-link";
+      sbtn.dataset.study = sl.id;
+      sbtn.textContent = sl.title;
+      sbtn.addEventListener("click", () => openStudyGuide(sl.id));
+      studyBlock.appendChild(sbtn);
+    }
+    nav.appendChild(studyBlock);
   }
 
   if (window.TRACE_GUIDE && window.TRACE_GUIDE.length) {
@@ -550,6 +587,7 @@ function init() {
 
   if (window.Coach) window.Coach.init();
   if (window.TraceGuide) window.TraceGuide.init();
+  if (window.StudyGuide) window.StudyGuide.init();
   if (window.Mcq) window.Mcq.init();
 
   initPythonEngine();

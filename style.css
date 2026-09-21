@@ -411,7 +411,49 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .coach-btn { width: 100%; font-size: 13px; padding: 8px 12px; }
 
 .mcq-panel,
-.trace-panel { max-width: 720px; }
+.trace-panel,
+.study-panel { max-width: 720px; }
+
+.study-body { margin-bottom: 8px; }
+
+.study-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0 16px;
+  font-size: 14px;
+}
+
+.study-table th,
+.study-table td {
+  border: 1px solid var(--rule);
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.study-table th {
+  background: var(--card);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.study-table code {
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.study-drill {
+  margin: 10px 0 0;
+  padding-left: 22px;
+  line-height: 1.6;
+}
+
+.study-body h3 {
+  margin: 20px 0 8px;
+  font-size: 16px;
+  color: var(--navy);
+}
 
 .trace-cfu-section {
   margin-top: 28px;
