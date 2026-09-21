@@ -360,7 +360,9 @@ const Mcq = {
     let choicesHtml = "";
     item.choices.forEach((text, i) => {
       const sel = chosen === i ? " selected" : "";
-      choicesHtml += `<button type="button" class="mcq-choice${sel}" data-i="${i}">${mcqEscape(text)}</button>`;
+      const choiceInner =
+        typeof window.formatChoiceHtml === "function" ? window.formatChoiceHtml(text) : mcqEscape(text);
+      choicesHtml += `<button type="button" class="mcq-choice${sel}" data-i="${i}">${choiceInner}</button>`;
     });
 
     const answered = this.answers.filter((a) => a !== null).length;
@@ -371,7 +373,11 @@ const Mcq = {
           <span class="chip">MCQ</span>
           <span>Question ${this.index + 1} of ${total} · ${answered}/${total} answered</span>
         </div>
-        <h2 class="mcq-q">${mcqEscape(item.q)}</h2>
+        <div class="mcq-q">${
+          typeof window.formatQuestionHtml === "function"
+            ? window.formatQuestionHtml(item.q)
+            : `<p class="mcq-prompt">${mcqEscape(item.q)}</p>`
+        }</div>
         <p class="mcq-unit-tag">Unit ${item.unit}</p>
         <div class="mcq-choices">${choicesHtml}</div>
         <div class="mcq-nav actions">
@@ -422,7 +428,12 @@ const Mcq = {
       if (ok) correct++;
       if (!ok) {
         review += `<div class="mcq-review-item fail">
-          <strong>Q${i + 1}.</strong> ${mcqEscape(item.q)}<br/>
+          <strong>Q${i + 1}.</strong>
+          <div class="mcq-review-q">${
+            typeof window.formatQuestionHtml === "function"
+              ? window.formatQuestionHtml(item.q)
+              : mcqEscape(item.q)
+          }</div>
           <span class="mcq-wrong">Your answer: ${pick === null ? "(skipped)" : mcqEscape(item.choices[pick])}</span><br/>
           <span class="mcq-right">Correct: ${mcqEscape(item.choices[item.answer])}</span>
           <p class="mcq-explain">${mcqEscape(item.explain)}</p>

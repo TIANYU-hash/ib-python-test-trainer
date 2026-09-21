@@ -485,7 +485,11 @@ const TraceGuide = {
       }
       cfuHtml += `
         <div class="trace-cfu-block">
-          <p class="trace-cfu-q"><strong>${i + 1}.</strong> ${traceEscape(item.q).replace(/\n/g, "<br/>")}</p>
+          <div class="trace-cfu-q"><strong>${i + 1}.</strong> ${
+            typeof window.formatQuestionHtml === "function"
+              ? window.formatQuestionHtml(item.q)
+              : traceEscape(item.q).replace(/\n/g, "<br/>")
+          }</div>
           <div class="mcq-choices">${choices}</div>
           ${feedback}
         </div>`;
