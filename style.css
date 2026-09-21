@@ -60,6 +60,50 @@ h1 {
 
 .sub { margin: 0; opacity: 0.9; font-size: 14px; max-width: 52ch; }
 
+.sub-link {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.sub-link:hover { color: var(--gold); }
+
+.header-home {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 18px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--card);
+  color: var(--navy);
+  border: 2px solid var(--gold);
+}
+
+.header-home:hover { filter: brightness(1.05); }
+
+.layout-study-only { grid-template-columns: 260px 1fr; }
+
+.study-page .content { max-width: 780px; }
+
+a.lesson-link-ext {
+  display: block;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+a.lesson-link-ext:hover { background: rgba(27, 42, 94, 0.08); }
+
 .loader-badge {
   font-size: 12px;
   padding: 8px 12px;
