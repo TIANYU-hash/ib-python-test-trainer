@@ -536,6 +536,25 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .study-body li { margin-bottom: 6px; }
 
+.study-rule {
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin: 14px 0;
+  background: var(--card);
+}
+
+.study-rule-title {
+  margin: 0 0 8px;
+  font-weight: 700;
+  color: var(--navy);
+  font-size: 15px;
+}
+
+.study-rule p:last-child {
+  margin-bottom: 0;
+}
+
 .trace-cfu-section {
   margin-top: 28px;
   padding-top: 20px;

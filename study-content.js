@@ -51,16 +51,21 @@ age + 1         # TypeError: str + int</pre>
 <div class="study-trap"><strong>Trap:</strong> <code>[0]</code> is truthy because the list is not empty. Only the number <code>0</code> inside would be falsy if you tested the element.</div>
 <h3>not, and, or — order matters</h3>
 <p>Without parentheses, Python applies <code>not</code> first, then <code>and</code>, then <code>or</code>. Parentheses override that — always work inside parentheses first.</p>
-<h3>Short-circuit (critical for tracing)</h3>
-<p><code>and</code> needs both sides true. If the left side is false, Python already knows the whole <code>and</code> is false, so it <strong>does not evaluate</strong> the right side.</p>
-<p><code>or</code> needs at least one true side. If the left is true, Python skips the right side.</p>
-<table class="study-table"><thead><tr><th>Expression shape</th><th>Right side runs?</th></tr></thead>
+<h3>Short-circuit (read slowly — this is not one memorized sentence)</h3>
+<p>Python evaluates <code>and</code> / <code>or</code> <strong>left to right</strong>. It may <strong>stop early</strong> because the answer is already decided. That is separate from whether the final result is “True/False” — <code>and</code>/<code>or</code> often return the <strong>actual values</strong> involved.</p>
+<table class="study-table"><thead><tr><th>Operator</th><th>When does Python stop early?</th><th>Does the right side run?</th></tr></thead>
 <tbody>
-<tr><td><code>False and anything</code></td><td>No</td></tr>
-<tr><td><code>True and anything</code></td><td>Yes</td></tr>
-<tr><td><code>True or anything</code></td><td>No</td></tr>
-<tr><td><code>False or anything</code></td><td>Yes</td></tr>
+<tr><td><code>and</code></td><td>Left is <strong>falsy</strong> → whole thing is false</td><td><strong>No</strong> — right side skipped</td></tr>
+<tr><td><code>and</code></td><td>Left is truthy → still need to check right</td><td><strong>Yes</strong></td></tr>
+<tr><td><code>or</code></td><td>Left is <strong>truthy</strong> → whole thing is true enough</td><td><strong>No</strong> — right side skipped</td></tr>
+<tr><td><code>or</code></td><td>Left is falsy → must try right side</td><td><strong>Yes</strong></td></tr>
 </tbody></table>
+<p>So for <code>0 or len("ab")</code>: left is falsy, so Python <strong>must</strong> run <code>len("ab")</code>. For <code>5 or print("hi")</code>: left is truthy, so <code>print</code> never runs.</p>
+<p><strong>What value comes out?</strong> (not always True/False)</p>
+<pre class="mcq-code">print(0 and 5)   # 0  — first falsy wins for and
+print(3 and 5)   # 5  — both checked, last value
+print(0 or 5)    # 5
+print(3 or 5)    # 3  — first truthy wins for or</pre>
 <h3>Worked trace: not + and</h3>
 <pre class="mcq-code">print(not (7 &gt; 9 and 7 == 10))</pre>
 <table class="study-table"><thead><tr><th>Step</th><th>Reasoning</th></tr></thead>
@@ -75,7 +80,7 @@ age + 1         # TypeError: str + int</pre>
 flag = x or len("ab")
 print(flag)</pre>
 <p><code>0</code> is falsy, so Python evaluates <code>len("ab")</code>, which is <code>2</code>. Output: <strong>2</strong>.</p>
-<div class="study-trap"><strong>Trap — “or picks the first true”:</strong> It returns a value, not just True/False. <code>0 or 5</code> → <code>5</code>.</div>
+<div class="study-trap"><strong>Trap:</strong> Mixing up <code>and</code> vs <code>or</code> skip direction is the #1 logic mistake. Use the table above — do not compress it into “falsy skips” without naming which operator.</div>
 <div class="study-trap"><strong>Trap — if x == 3 or 5:</strong> Parsed as <code>(x == 3) or (5)</code>. Since <code>5</code> is truthy, the condition is almost always true. Write <code>x == 3 or x == 5</code>.</div>
 <div class="study-trick"><strong>Trick:</strong> When tracing, underline the first part of each <code>and</code>/<code>or</code>. Decide true/false before touching the second part.</div>`,
   },
@@ -320,6 +325,85 @@ return -1</pre>
 <li>Binary search for 12 in [2,5,8,12,16] → index <strong>3</strong></li>
 </ol>
 <p>Practice more on <a href="index.html">Home</a> (coding + MCQ mock) and the <strong>Trace guide</strong> CFU quizzes.</p>`,
+  },
+  {
+    id: "study-10",
+    title: "10 · Small rules reference",
+    html: `<p>These are the “small” rules that are easy to forget because each one only matters in one type of question. Each entry explains <strong>what</strong> happens and <strong>one example</strong> — not a compressed bullet list.</p>
+
+<div class="study-rule"><p class="study-rule-title">= vs ==</p>
+<p><code>=</code> assigns a value to a name. <code>==</code> compares two values. <code>if x = 3</code> is illegal; <code>if x == 3</code> is a comparison.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">print with commas</p>
+<p><code>print(a, b, c)</code> evaluates a, then b, then c, then shows them on <strong>one line</strong> separated by spaces. It is not the same as printing three separate lines.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Index 0 and valid indices</p>
+<p>The first slot is index <strong>0</strong>. If <code>len(items) == 3</code>, legal indices are <strong>0, 1, 2</strong> only. Index <code>3</code> is one past the end → IndexError (unless you are slicing).</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Slice end is excluded</p>
+<p><code>items[1:3]</code> takes indices 1 and 2, not 3. <code>items[:2]</code> is the first two elements. Empty slice past the end is OK: <code>items[99:]</code> → <code>[]</code>.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">range stop value</p>
+<p><code>range(2, 11, 3)</code> produces 2, 5, 8 — it never includes 11. Think “stop before stop.”</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Iterable (what for-loops need)</p>
+<p><code>for x in something</code> requires <code>something</code> to be iterable (list, string, range, dict keys, etc.). <code>for x in 7</code> fails because an int is not iterable. <code>tuple(5)</code> fails for the same reason; <code>tuple([5])</code> works.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">String + string only</p>
+<p><code>"a" + "b"</code> → <code>"ab"</code>. <code>"7" + 3</code> → TypeError. Use <code>int("7") + 3</code> if you need math.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">String methods do not change the old string</p>
+<p><code>s.lower()</code> returns a new string. Unless you assign back (<code>s = s.lower()</code>), <code>s</code> stays the same.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">in vs find</p>
+<p><code>"cat" in phrase</code> → True/False. <code>phrase.find("cat")</code> → index or -1. Trap: <code>find("cat") &gt; 0</code> is false when <code>"cat"</code> starts at index 0 — use <code>&gt;= 0</code> or use <code>in</code>.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">append vs extend</p>
+<p><code>append(x)</code> adds <strong>one</strong> item to the end (even if x is a list). <code>extend([1,2])</code> adds two separate items. <code>[1,2].append([3])</code> → <code>[1,2,[3]]</code>.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">remove vs pop</p>
+<p><code>remove(value)</code> deletes the <strong>first</strong> matching value. <code>pop(index)</code> deletes by position and returns that item. <code>pop("name")</code> is wrong — names are not indices.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">List += often acts like extend</p>
+<p><code>nums += [4, 5]</code> usually mutates the same list object (like extend). That is different from <code>nums = nums + [4, 5]</code>, which builds a new list.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Copying a list (avoid accidental alias)</p>
+<p><code>b = a</code> shares the same list. To copy: <code>b = a.copy()</code> or <code>b = a[:]</code> or <code>b = list(a)</code>. Still shallow: inner lists may be shared.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">One-element tuple comma</p>
+<p><code>(5)</code> is just the int 5 in parentheses. A tuple with one item is <code>(5,)</code> — the comma is required.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">dict[key] vs get</p>
+<p><code>d["missing"]</code> → KeyError. <code>d.get("missing")</code> → <code>None</code>. <code>d.get("missing", 0)</code> → <code>0</code> when you supply a default.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Looping a dict</p>
+<p><code>for k in prices:</code> gives each <strong>key</strong>. Values need <code>prices[k]</code> or <code>.values()</code> / <code>.items()</code>.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">2D list indexing</p>
+<p><code>grid[row][col]</code> — row first (which sublist), then column (index inside that row). Not the other way around.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">try / except (when except runs)</p>
+<p>The <code>try</code> block runs line by line. If an error happens, Python jumps to <code>except</code> and skips the rest of <code>try</code>. If no error, <code>except</code> is skipped entirely.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">break vs continue vs pass</p>
+<p><code>break</code> leaves the loop completely. <code>continue</code> skips to the next iteration of the same loop. <code>pass</code> does nothing — placeholder so syntax is valid.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Checking for None</p>
+<p><code>x is None</code> tests identity (common style). <code>x == None</code> often works but <code>is None</code> is what many style guides prefer on tests.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">== vs is (values vs same object)</p>
+<p><code>3 == 3.0</code> is True (same numeric value). <code>3 is 3.0</code> is False (different types/objects). For small ints Python may cache — on tests, trust the rule: <code>==</code> value, <code>is</code> identity.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Nested loops — how many times</p>
+<p>Inner loop finishes fully for each outer step. Two loops 0..n-1 → about <code>n × n</code> body runs (unless break). That is why nested loops often mean O(n²).</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Binary search loop condition</p>
+<p>Common pattern: <code>while low &lt;= high</code>. When <code>low</code> passes <code>high</code>, the search window is empty → not found. <code>low</code> and <code>high</code> are always indices, not the values stored in the list.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Linear “not found” convention</p>
+<p>Many functions return <code>-1</code> when no index matches. That is a sentinel, not “index -1” (last element).</p></div>
+
+<p>See also <strong>Part 2</strong> for the full <code>and</code>/<code>or</code> short-circuit table — that topic deserves its own page, not one line.</p>`,
   },
 ];
 
