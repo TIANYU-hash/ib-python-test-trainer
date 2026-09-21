@@ -499,6 +499,37 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   color: var(--navy);
 }
 
+.study-trap,
+.study-trick {
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin: 14px 0;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.study-trap {
+  background: var(--bad-bg);
+  border-left: 4px solid var(--bad);
+}
+
+.study-trick {
+  background: var(--ok-bg);
+  border-left: 4px solid var(--ok);
+}
+
+.study-trap strong,
+.study-trick strong {
+  color: var(--navy);
+}
+
+.study-body ul {
+  margin: 8px 0 12px;
+  padding-left: 22px;
+}
+
+.study-body li { margin-bottom: 6px; }
+
 .trace-cfu-section {
   margin-top: 28px;
   padding-top: 20px;
