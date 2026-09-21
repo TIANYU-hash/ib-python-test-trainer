@@ -460,6 +460,12 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .study-body { margin-bottom: 8px; }
 
+.study-body p {
+  margin: 0 0 12px;
+  line-height: 1.6;
+  max-width: 68ch;
+}
+
 .study-table {
   width: 100%;
   border-collapse: collapse;
