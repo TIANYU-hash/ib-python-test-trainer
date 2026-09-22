@@ -215,11 +215,26 @@ print(x)</pre>
 <pre class="mcq-code">def f():
     print(1)
 # f() returns None</pre>
-<h3>Scope trap</h3>
+<h3>Scope — local, global, and types in one trace</h3>
+<p>Rubric B2.1.1 expects you to trace names that hold <strong>bool, int, float, str</strong> (and “char” = one-character str). Track each name’s value after every line.</p>
+<pre class="mcq-code">score = 85          # global int
+def grade():
+    passed = score >= 80    # local bool
+    label = "OK" if passed else "no"   # local str
+    return label
+print(grade(), score)   # OK 85</pre>
 <pre class="mcq-code">count = 0
 def bump():
-    count = count + 1   # UnboundLocalError</pre>
-<p>Assignment makes <code>count</code> local for the whole function, so the right-hand <code>count</code> is not the global. Need <code>global count</code> to mutate global (rare on your tests, but MCQs ask it).</p>
+    count = count + 1   # UnboundLocalError — count treated as local</pre>
+<p>Assignment makes <code>count</code> local for the whole function, so the right-hand <code>count</code> is not the global. To update the global counter:</p>
+<pre class="mcq-code">count = 0
+def bump():
+    global count
+    count = count + 1
+bump()
+bump()
+print(count)   # 2</pre>
+<p><strong>Decimal:</strong> syllabus “decimal” → Python <code>float</code> (e.g. <code>3.4</code>, <code>2.0</code> from <code>/</code>).</p>
 <div class="study-trick"><strong>Trick:</strong> Tuple return: <code>return q, r</code> then <code>q, r = divide(17, 5)</code> — watch print order if swapped.</div>`,
   },
   {
@@ -329,81 +344,354 @@ return -1</pre>
   {
     id: "study-10",
     title: "10 · Small rules reference",
-    html: `<p>These are the “small” rules that are easy to forget because each one only matters in one type of question. Each entry explains <strong>what</strong> happens and <strong>one example</strong> — not a compressed bullet list.</p>
+    html: `<p>One-off rules that only show up in certain question types. Each box has a short explanation plus an example. Use the section headings to jump — not everything applies to every test topic.</p>
+
+<h3>Syntax &amp; printing</h3>
 
 <div class="study-rule"><p class="study-rule-title">= vs ==</p>
 <p><code>=</code> assigns a value to a name. <code>==</code> compares two values. <code>if x = 3</code> is illegal; <code>if x == 3</code> is a comparison.</p></div>
 
 <div class="study-rule"><p class="study-rule-title">print with commas</p>
-<p><code>print(a, b, c)</code> evaluates a, then b, then c, then shows them on <strong>one line</strong> separated by spaces. It is not the same as printing three separate lines.</p></div>
+<p><code>print(a, b, c)</code> evaluates a, then b, then c, then shows them on <strong>one line</strong> separated by spaces. It is not the same as three separate <code>print</code> calls.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">print vs return</p>
+<p><code>print(x)</code> shows output in the console only. A function with no <code>return</code> gives <code>None</code> to the caller even if it printed useful text. Read whether the question asks “printed” or “returned.”</p></div>
+
+<h3>Numbers &amp; conversion</h3>
+
+<div class="study-rule"><p class="study-rule-title">/ vs // vs %</p>
+<p><code>/</code> is always float division in Python 3 (<code>10 / 5</code> → <code>2.0</code>). <code>//</code> is floor division. <code>%</code> is remainder. On one <code>print(a % b, a // b, a / b)</code> line, evaluate each piece separately.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">** groups right to left</p>
+<p><code>2 ** 3 ** 2</code> means <code>2 ** (3 ** 2)</code> = <code>2 ** 9</code> = <code>512</code>, not <code>64</code>.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">input() is always str</p>
+<p>Even if the user types digits, <code>input()</code> returns a string. <code>age = input()</code> then <code>age + 1</code> → TypeError until you use <code>int(age)</code>.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">int() / float() and ValueError</p>
+<p><code>int("7")</code> works. <code>int("3.9")</code> fails — the string is not a plain integer literal. <code>float("cat")</code> fails too. Bad <strong>content</strong> for conversion → <strong>ValueError</strong>.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">TypeError vs ValueError</p>
+<p><strong>TypeError:</strong> the operation does not make sense for these types (<code>"7" + 3</code>). <strong>ValueError:</strong> types are OK but the value cannot be converted or used (<code>int("3.9")</code>, <code>list.index(missing)</code>).</p></div>
+
+<div class="study-rule"><p class="study-rule-title">isdigit(), isalpha(), isdecimal()</p>
+<p>These are <strong>string</strong> methods that return True/False. <code>"42".isdigit()</code> → True; <code>"3.9".isdigit()</code> → False (dot is not a digit). They do not convert — use <code>int()</code> after you check if you need to.</p></div>
+
+<h3>Strings &amp; text</h3>
+
+<div class="study-rule"><p class="study-rule-title">Strings are immutable</p>
+<p>You cannot change one character in place: <code>word[0] = "H"</code> → TypeError. Build a new string: <code>word = "H" + word[1:]</code> or use methods like <code>upper()</code>.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">String + and string *</p>
+<p><code>"a" + "b"</code> → <code>"ab"</code>. <code>"7" + 3</code> → TypeError. <code>"hi" * 3</code> → <code>"hihihi"</code>. <code>3 * "ab"</code> → <code>"ababab"</code>.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Methods return new strings</p>
+<p><code>s.lower()</code>, <code>s.strip()</code>, <code>s.replace(...)</code> return a <strong>new</strong> string. Unless you assign back (<code>s = s.strip()</code>), <code>s</code> is unchanged.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">strip(), lstrip(), rstrip()</p>
+<p>Remove whitespace from both ends (<code>strip</code>), left only (<code>lstrip</code>), or right only (<code>rstrip</code>). Optional argument removes those characters instead: <code>"...hi...".strip(".")</code>. Example trace:</p>
+<pre class="mcq-code">tag = "  hi  "
+print(len(tag.strip()), tag.strip()[0])   # 2 h</pre></div>
+
+<div class="study-rule"><p class="study-rule-title">split() with no argument</p>
+<p><code>text.split()</code> splits on <strong>any whitespace</strong> and drops empty runs — good for “words in a sentence.” Punctuation stays on the word (<code>"cool!"</code> is one token). <code>text.split(",")</code> splits only on commas.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">replace(old, new)</p>
+<p>Replaces <strong>all</strong> occurrences of a substring with another substring. Returns a new string. <code>"a-b-a".replace("-", "")</code> → <code>"aba"</code>.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">upper, lower, capitalize, title</p>
+<p><code>upper()</code> / <code>lower()</code> — whole string. <code>capitalize()</code> — first char upper, rest lower (<code>"eLEPHANT"</code> → <code>"Elephant"</code>). <code>title()</code> — each word capitalized (<code>"anna kline"</code> → <code>"Anna Kline"</code>). Trace <code>len(s.title())</code> on the <strong>new</strong> string, not the old one.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">join(separator)</p>
+<p>Called on the separator string: <code>" ".join(["a", "b"])</code> → <code>"a b"</code>. The argument must be a list (or iterable) of strings.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">in vs find (strings)</p>
+<p><code>"cat" in phrase</code> → True/False. <code>phrase.find("cat")</code> → index or <code>-1</code> if missing. Trap: <code>find("cat") &gt; 0</code> is false when <code>"cat"</code> starts at index 0 — use <code>&gt;= 0</code> or use <code>in</code>.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">len() on strings and lists</p>
+<p><code>len("hello")</code> → 5. After <code>strip()</code>, length can shrink. Index <code>len(s)-1</code> is the last valid index; index <code>len(s)</code> is out of range for single indexing.</p></div>
+
+<h3>Indexing, slices, loops</h3>
 
 <div class="study-rule"><p class="study-rule-title">Index 0 and valid indices</p>
 <p>The first slot is index <strong>0</strong>. If <code>len(items) == 3</code>, legal indices are <strong>0, 1, 2</strong> only. Index <code>3</code> is one past the end → IndexError (unless you are slicing).</p></div>
 
+<div class="study-rule"><p class="study-rule-title">Negative indices</p>
+<p><code>items[-1]</code> is the last element, <code>items[-2]</code> second from end. Same idea for strings.</p></div>
+
 <div class="study-rule"><p class="study-rule-title">Slice end is excluded</p>
 <p><code>items[1:3]</code> takes indices 1 and 2, not 3. <code>items[:2]</code> is the first two elements. Empty slice past the end is OK: <code>items[99:]</code> → <code>[]</code>.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Slice step (optional third number)</p>
+<p><code>s[::-1]</code> reverses a string or list. Step is how far to jump each time; omitted step defaults to 1.</p></div>
 
 <div class="study-rule"><p class="study-rule-title">range stop value</p>
 <p><code>range(2, 11, 3)</code> produces 2, 5, 8 — it never includes 11. Think “stop before stop.”</p></div>
 
 <div class="study-rule"><p class="study-rule-title">Iterable (what for-loops need)</p>
-<p><code>for x in something</code> requires <code>something</code> to be iterable (list, string, range, dict keys, etc.). <code>for x in 7</code> fails because an int is not iterable. <code>tuple(5)</code> fails for the same reason; <code>tuple([5])</code> works.</p></div>
+<p><code>for x in something</code> requires an iterable (list, string, range, dict keys, …). <code>for x in 7</code> fails. <code>tuple(5)</code> fails; <code>tuple([5])</code> works.</p></div>
 
-<div class="study-rule"><p class="study-rule-title">String + string only</p>
-<p><code>"a" + "b"</code> → <code>"ab"</code>. <code>"7" + 3</code> → TypeError. Use <code>int("7") + 3</code> if you need math.</p></div>
+<div class="study-rule"><p class="study-rule-title">for item in lst vs range(len(lst))</p>
+<p><code>for x in lst</code> — <code>x</code> is each <strong>value</strong>. <code>for i in range(len(lst))</code> — <code>i</code> is each <strong>index</strong> so you can use <code>lst[i]</code> or change position logic.</p></div>
 
-<div class="study-rule"><p class="study-rule-title">String methods do not change the old string</p>
-<p><code>s.lower()</code> returns a new string. Unless you assign back (<code>s = s.lower()</code>), <code>s</code> stays the same.</p></div>
+<div class="study-rule"><p class="study-rule-title">while and len — off-by-one</p>
+<p>Valid indices for length 3 are 0,1,2. <code>while i &lt;= len(items)</code> allows <code>i == 3</code> → IndexError. Prefer <code>i &lt; len(items)</code> or a <code>for</code> loop.</p></div>
 
-<div class="study-rule"><p class="study-rule-title">in vs find</p>
-<p><code>"cat" in phrase</code> → True/False. <code>phrase.find("cat")</code> → index or -1. Trap: <code>find("cat") &gt; 0</code> is false when <code>"cat"</code> starts at index 0 — use <code>&gt;= 0</code> or use <code>in</code>.</p></div>
-
-<div class="study-rule"><p class="study-rule-title">append vs extend</p>
-<p><code>append(x)</code> adds <strong>one</strong> item to the end (even if x is a list). <code>extend([1,2])</code> adds two separate items. <code>[1,2].append([3])</code> → <code>[1,2,[3]]</code>.</p></div>
-
-<div class="study-rule"><p class="study-rule-title">remove vs pop</p>
-<p><code>remove(value)</code> deletes the <strong>first</strong> matching value. <code>pop(index)</code> deletes by position and returns that item. <code>pop("name")</code> is wrong — names are not indices.</p></div>
-
-<div class="study-rule"><p class="study-rule-title">List += often acts like extend</p>
-<p><code>nums += [4, 5]</code> usually mutates the same list object (like extend). That is different from <code>nums = nums + [4, 5]</code>, which builds a new list.</p></div>
-
-<div class="study-rule"><p class="study-rule-title">Copying a list (avoid accidental alias)</p>
-<p><code>b = a</code> shares the same list. To copy: <code>b = a.copy()</code> or <code>b = a[:]</code> or <code>b = list(a)</code>. Still shallow: inner lists may be shared.</p></div>
-
-<div class="study-rule"><p class="study-rule-title">One-element tuple comma</p>
-<p><code>(5)</code> is just the int 5 in parentheses. A tuple with one item is <code>(5,)</code> — the comma is required.</p></div>
-
-<div class="study-rule"><p class="study-rule-title">dict[key] vs get</p>
-<p><code>d["missing"]</code> → KeyError. <code>d.get("missing")</code> → <code>None</code>. <code>d.get("missing", 0)</code> → <code>0</code> when you supply a default.</p></div>
-
-<div class="study-rule"><p class="study-rule-title">Looping a dict</p>
-<p><code>for k in prices:</code> gives each <strong>key</strong>. Values need <code>prices[k]</code> or <code>.values()</code> / <code>.items()</code>.</p></div>
-
-<div class="study-rule"><p class="study-rule-title">2D list indexing</p>
-<p><code>grid[row][col]</code> — row first (which sublist), then column (index inside that row). Not the other way around.</p></div>
-
-<div class="study-rule"><p class="study-rule-title">try / except (when except runs)</p>
-<p>The <code>try</code> block runs line by line. If an error happens, Python jumps to <code>except</code> and skips the rest of <code>try</code>. If no error, <code>except</code> is skipped entirely.</p></div>
+<div class="study-rule"><p class="study-rule-title">elif order — first match wins</p>
+<p>Python checks <code>if</code>, then each <code>elif</code> top to bottom and stops at the first true branch. Put stricter conditions first (e.g. <code>&gt;= 90</code> before <code>&gt;= 80</code>) so a score of 100 is not caught by the wrong grade.</p></div>
 
 <div class="study-rule"><p class="study-rule-title">break vs continue vs pass</p>
 <p><code>break</code> leaves the loop completely. <code>continue</code> skips to the next iteration of the same loop. <code>pass</code> does nothing — placeholder so syntax is valid.</p></div>
 
-<div class="study-rule"><p class="study-rule-title">Checking for None</p>
-<p><code>x is None</code> tests identity (common style). <code>x == None</code> often works but <code>is None</code> is what many style guides prefer on tests.</p></div>
-
-<div class="study-rule"><p class="study-rule-title">== vs is (values vs same object)</p>
-<p><code>3 == 3.0</code> is True (same numeric value). <code>3 is 3.0</code> is False (different types/objects). For small ints Python may cache — on tests, trust the rule: <code>==</code> value, <code>is</code> identity.</p></div>
-
 <div class="study-rule"><p class="study-rule-title">Nested loops — how many times</p>
-<p>Inner loop finishes fully for each outer step. Two loops 0..n-1 → about <code>n × n</code> body runs (unless break). That is why nested loops often mean O(n²).</p></div>
+<p>Inner loop finishes fully for each outer step. Two loops 0..n-1 → about <code>n × n</code> body runs (unless break). Often O(n²).</p></div>
 
-<div class="study-rule"><p class="study-rule-title">Binary search loop condition</p>
-<p>Common pattern: <code>while low &lt;= high</code>. When <code>low</code> passes <code>high</code>, the search window is empty → not found. <code>low</code> and <code>high</code> are always indices, not the values stored in the list.</p></div>
+<h3>Lists &amp; tuples</h3>
+
+<div class="study-rule"><p class="study-rule-title">append vs extend</p>
+<p><code>append(x)</code> adds <strong>one</strong> item (even if x is a list). <code>extend([1,2])</code> adds each item. <code>[1,2].append([3])</code> → <code>[1,2,[3]]</code>.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">insert(i, x) and count(x)</p>
+<p><code>insert</code> puts a value at index <code>i</code> and shifts the rest. <code>count(x)</code> counts how many times <code>x</code> appears — it does not return an index.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">remove vs pop</p>
+<p><code>remove(value)</code> deletes the <strong>first</strong> matching value. <code>pop(index)</code> deletes by position and returns that item. <code>pop()</code> with no arg removes the last item. <code>pop("Mo")</code> → TypeError (need an integer index).</p></div>
+
+<div class="study-rule"><p class="study-rule-title">index(value) on a list</p>
+<p><code>lst.index("Mo")</code> returns the index of the <strong>first</strong> match. If the value is missing → <strong>ValueError</strong> (not -1). Strings use <code>find</code> for -1; lists use <code>index</code>.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">sort() vs sorted()</p>
+<p><code>nums.sort()</code> rearranges the list <strong>in place</strong> and returns <code>None</code>. <code>t = nums.sort(); print(t, nums[0])</code> often prints <code>None</code> and the new smallest. <code>sorted(nums)</code> returns a new sorted list and leaves <code>nums</code> unchanged.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Mutating list methods often return None</p>
+<p><code>append</code>, <code>extend</code>, <code>insert</code>, <code>remove</code>, <code>sort</code>, <code>reverse</code> change the list and return <code>None</code>. Do not chain them expecting a new list.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">List += often acts like extend</p>
+<p><code>nums += [4, 5]</code> usually mutates the same list. <code>nums = nums + [4, 5]</code> builds a new list object.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Copying a list (avoid accidental alias)</p>
+<p><code>b = a</code> shares the same list. Copy with <code>a.copy()</code>, <code>a[:]</code>, or <code>list(a)</code>. Shallow copy: inner lists may still be shared.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">[[0] * 3] * 3 trap</p>
+<p>Repeating the same inner list alias makes every row the same object. Changing <code>grid[0][0]</code> can change every row. Build rows separately in a loop or use independent sublists.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">One-element tuple comma</p>
+<p><code>(5)</code> is just the int 5. A one-item tuple is <code>(5,)</code> — the comma matters.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">max, min, sum on iterables</p>
+<p><code>max([3,8,2])</code> → 8. <code>sum([1,2,3])</code> → 6. Empty list with <code>max</code> → ValueError.</p></div>
+
+<h3>Dicts &amp; 2D lists</h3>
+
+<div class="study-rule"><p class="study-rule-title">dict[key] vs get</p>
+<p><code>d["missing"]</code> → KeyError. <code>d.get("missing")</code> → <code>None</code>. <code>d.get("missing", 0)</code> → default when key absent.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Looping a dict</p>
+<p><code>for k in prices:</code> gives each <strong>key</strong>. Use <code>prices[k]</code>, <code>.values()</code>, or <code>.items()</code> for values or pairs.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">2D list indexing</p>
+<p><code>grid[row][col]</code> — row first (which sublist), then column inside that row. <code>lst[i][key]</code> for a list of dicts: index the list, then the key.</p></div>
+
+<h3>Functions, errors, search</h3>
+
+<div class="study-rule"><p class="study-rule-title">Function without return</p>
+<p>If the body has no <code>return</code>, the call evaluates to <code>None</code>. Printing inside the function does not change the return value.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Local names inside a function</p>
+<p>Assigning to a name inside a function creates/updates a <strong>local</strong> variable unless you use <code>global</code> (rare on Y1 tests). Outer variables can be read if you do not assign to the same name locally.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">try / except flow</p>
+<p><code>try</code> runs line by line. On error, Python jumps to matching <code>except</code> and skips the rest of <code>try</code>. If no error, <code>except</code> is skipped.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">except ValueError (and specific types)</p>
+<p><code>except ValueError:</code> runs only for ValueError (e.g. bad <code>int()</code> input). Other errors still crash. Bare <code>except:</code> catches everything — avoid unless the question shows it.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">finally (always runs)</p>
+<p>After <code>try</code> / <code>except</code>, a <code>finally:</code> block runs whether or not an error occurred — useful for cleanup (close file, reset flag). Order: try → except (if error) → finally.</p>
+<pre class="mcq-code">try:
+    n = int(text)
+except ValueError:
+    n = 0
+finally:
+    print("done")   # always prints</pre></div>
+
+<div class="study-rule"><p class="study-rule-title">Extract a substring (slice)</p>
+<p>Indices pick characters without changing the original string: <code>s[1:4]</code> from index 1 up to (not including) 4. <code>word = "PYTHON"; word[1:4]</code> → <code>"YTH"</code>. Combine with <code>+</code> or methods to build a new string.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Loop over characters (B2.1.2 construct)</p>
+<p><code>for ch in word:</code> gives each one-character string. Use this to count, filter, or build a new string: <code>result = result + ch</code> only when <code>ch</code> is not a vowel (see Home → <strong>no_vowels</strong> lesson).</p></div>
+
+<div class="study-rule"><p class="study-rule-title">str.index vs str.find</p>
+<p><code>s.find("x")</code> → index or <code>-1</code>. <code>s.index("x")</code> → index or <strong>ValueError</strong> if missing (like list <code>.index</code>).</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Remove or alter part of a string</p>
+<p>Delete index <code>i</code>: <code>s[:i] + s[i+1:]</code>. Insert/replace: <code>replace</code> or slice + concat — always store the new string in a variable.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Resource errors (files)</p>
+<p>Opening a missing file can raise <strong>FileNotFoundError</strong>. Syllabus “resource unavailability” — handle with try/except so the program can show a message instead of crashing.</p>
+<pre class="mcq-code">try:
+    f = open("data.txt")
+    text = f.read()
+except FileNotFoundError:
+    text = ""</pre></div>
+
+<div class="study-rule"><p class="study-rule-title">Checking for None</p>
+<p><code>x is None</code> is the usual test. Do not confuse “not found” return <code>-1</code> with falsy <code>0</code> when checking search results — read the question’s convention.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">== vs is</p>
+<p><code>==</code> compares values. <code>is</code> compares identity (same object). <code>3 == 3.0</code> True; <code>3 is 3.0</code> False.</p></div>
 
 <div class="study-rule"><p class="study-rule-title">Linear “not found” convention</p>
-<p>Many functions return <code>-1</code> when no index matches. That is a sentinel, not “index -1” (last element).</p></div>
+<p>Many functions return <code>-1</code> when no index matches — a sentinel, not “use index -1” (last element).</p></div>
 
-<p>See also <strong>Part 2</strong> for the full <code>and</code>/<code>or</code> short-circuit table — that topic deserves its own page, not one line.</p>`,
+<div class="study-rule"><p class="study-rule-title">Binary search loop condition</p>
+<p>Common: <code>while low &lt;= high</code>. When <code>low</code> passes <code>high</code>, window empty → not found. <code>low</code>/<code>high</code> are <strong>indices</strong>; data must be sorted for standard binary search.</p></div>
+
+<div class="study-rule"><p class="study-rule-title">Bubble / selection sort (one pass idea)</p>
+<p><strong>Bubble:</strong> compare neighbors, swap if out of order; each pass fixes one more at the end. <strong>Selection:</strong> each outer step finds the min in the unsorted tail and swaps it into place. Count what the question asks: comparisons, swaps, or passes.</p></div>
+
+<p>See also <strong>Part 1</strong> (operators, input), <strong>Part 2</strong> (<code>and</code>/<code>or</code> short-circuit table), <strong>Part 9</strong> (full linear vs binary write-up), and <strong>Part 11</strong> (IB B2 criteria map).</p>`,
+  },
+  {
+    id: "study-11",
+    title: "11 · IB B2 criteria map",
+    html: `<p>This part ties your <strong>IB CS B2</strong> statements to what you must <strong>construct</strong>, <strong>trace</strong>, or <strong>describe</strong>. Use it for self-check before a criterion is graded. “Meeting” usually means you can do it correctly most of the time with clear reasoning; “Exceeding” means you handle edge cases and can explain <em>why</em>, not just the answer.</p>
+
+<h3>Coverage checklist (syllabus → this site)</h3>
+<table class="study-table"><thead><tr><th>Criterion</th><th>Required</th><th>Where</th><th>Gap to close yourself</th></tr></thead>
+<tbody>
+<tr><td>B2.1.1</td><td>Trace global/local; bool, char, decimal, int, str</td><td>Parts 1–2, 6, 10; MCQ; Trace guide</td><td>Write a 6-line program and fill a trace table by hand</td></tr>
+<tr><td>B2.1.2</td><td>Extract &amp; manipulate substrings</td><td>Part 6, 10; Unit 10 lessons; <code>no_vowels</code></td><td>One task using slice + loop + concat</td></tr>
+<tr><td>B2.1.3</td><td>Describe failures; try/except/finally</td><td>Part 10–11; <code>parse_age</code> lesson</td><td>Paragraph: role of EH + logic vs runtime error</td></tr>
+<tr><td>B2.1.4</td><td>Trace table, print, breakpoint, step</td><td>Parts 1–8; Trace guide; template below</td><td>One bug fixed with a breakpoint in VS Code/Cursor</td></tr>
+<tr><td>B2.2.2</td><td>1D/2D list add, remove, traverse</td><td>Part 5, 10; Unit 13; <code>sum_grid</code></td><td>Nested loop over a 3×3 grid</td></tr>
+<tr><td>B2.4.2</td><td>Linear &amp; binary search; efficiency; choice</td><td>Parts 7–9; Constructs search lessons</td><td>Code <code>binary_search</code> from memory; trace both</td></tr>
+</tbody></table>
+
+<h3>B2.1.1 — Global &amp; local variables (trace &amp; construct)</h3>
+<p><strong>Data types on the rubric:</strong> In Python you work with <code>bool</code>, <code>int</code>, <code>float</code>, <code>str</code>. A “char” is usually a one-character string: <code>word[0]</code> → <code>"P"</code>, not a separate char type like Java.</p>
+<table class="study-table"><thead><tr><th>Idea</th><th>What to show</th></tr></thead>
+<tbody>
+<tr><td>Local variable</td><td>Created inside a <code>def</code>; exists only while the function runs.</td></tr>
+<tr><td>Global variable</td><td>Defined at module level; readable inside functions unless you assign to the same name locally.</td></tr>
+<tr><td>Rebind vs mutate</td><td><code>L = L + [9]</code> inside a function rebinds <strong>local</strong> <code>L</code>; outer list unchanged. <code>L.append(9)</code> mutates the shared list object.</td></tr>
+<tr><td><code>global</code></td><td>Needed to <strong>assign</strong> to a global name inside a function (e.g. counter). Rare but appears on traces.</td></tr>
+</tbody></table>
+<pre class="mcq-code">total = 0          # global
+def add(n):
+    local_sum = total + n   # read global, write local
+    return local_sum
+print(add(5), total)   # 5 0</pre>
+<p><strong>Practice:</strong> Study <strong>Part 5–6</strong> (including <code>global count</code> trace), Part 10 (copy / +=), Home → <strong>Local total</strong>, MCQ on <code>f(x)</code> / <code>L + []</code>, Trace guide scope items.</p>
+
+<h3>B2.1.2 — Substrings: extract &amp; manipulate</h3>
+<p>You must write code that <strong>identifies</strong> and <strong>extracts</strong> parts of strings, then alters, concatenates, or replaces.</p>
+<table class="study-table"><thead><tr><th>Technique</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td>Slice</td><td><code>s[2:5]</code>, <code>s[:3]</code>, <code>s[-2:]</code></td></tr>
+<tr><td>Index one char</td><td><code>s[0]</code>, <code>s[i]</code></td></tr>
+<tr><td>Concatenate</td><td><code>prefix + s[1:]</code> or <code>s[:i] + s[i+1:]</code></td></tr>
+<tr><td>Replace / case</td><td><code>s.replace("a", "o")</code>, <code>s.upper()</code>, <code>s.strip()</code></td></tr>
+<tr><td>Test substring</td><td><code>"cat" in s</code>, <code>s.find("cat")</code> (watch index 0)</td></tr>
+<tr><td>Split into parts</td><td><code>words = line.split()</code> then <code>words[1][0]</code></td></tr>
+<tr><td>Loop characters</td><td><code>for ch in s:</code> to scan or build a new string</td></tr>
+<tr><td>Alter / delete</td><td><code>s[:i] + s[i+1:]</code>, <code>replace</code>, assign result back</td></tr>
+</tbody></table>
+<p>Strings are <strong>immutable</strong> — every manipulation produces a <strong>new</strong> string (assign it if you need to keep it).</p>
+<pre class="mcq-code">name = "anna kline"
+display = name.title()
+print(display.split()[1][0])   # K — extract + manipulate chain</pre>
+<p><strong>Practice:</strong> Home → Unit 10 (slice <code>YTH</code>, split, <strong>no_vowels</strong>), Part 6 &amp; 10 string rules, Trace guide string CFU (<code>title</code>, <code>strip</code>).</p>
+
+<h3>B2.1.3 — Exception handling (describe &amp; use)</h3>
+<p><strong>Why exceptions exist:</strong> So a program can respond to failure instead of crashing silently or stopping the whole run.</p>
+<p><strong>Failure types the syllabus mentions:</strong></p>
+<ul>
+<li><strong>Unexpected input</strong> — user types letters when you expect a number → <code>int()</code> → ValueError.</li>
+<li><strong>Resource unavailability</strong> — e.g. file not found → <code>FileNotFoundError</code> when opening a path that does not exist.</li>
+<li><strong>Logic errors</strong> — program runs but wrong result; <strong>not</strong> caught by try/except (you fix the algorithm).</li>
+</ul>
+<p><strong>Role of exception handling (exam wording):</strong> lets the program detect runtime failures, respond with a fallback or message, and optionally run cleanup (<code>finally</code>) instead of stopping abruptly.</p>
+<pre class="mcq-code"># logic error — no exception; wrong math
+avg = a + b / 2        # should be (a + b) / 2
+
+# runtime error — try/except can help
+try:
+    n = int(text)
+except ValueError:
+    n = 0</pre>
+<p><strong>Constructs (Python):</strong> <code>try</code> / <code>except</code> / optional <code>finally</code>. (Java: try/catch/finally.) You may list several <code>except</code> types; <code>finally</code> always runs.</p>
+<pre class="mcq-code">try:
+    age = int(input_text)
+except ValueError:
+    age = 0
+finally:
+    print("checked")</pre>
+<p><code>except</code> runs only when a matching error happens in <code>try</code>. Other error types need their own <code>except</code> or propagate upward.</p>
+<p><strong>Practice:</strong> Part 10 (ValueError, FileNotFoundError, finally), Home → <strong>Safe int parse</strong>, MCQ Unit 5; in writing, explain logic error vs exception.</p>
+
+<h3>B2.1.4 — Debugging techniques (describe &amp; use)</h3>
+<table class="study-table"><thead><tr><th>Technique</th><th>What you do</th><th>When it helps</th></tr></thead>
+<tbody>
+<tr><td><strong>Trace table</strong></td><td>Track line, each variable, and output after each step.</td><td>Loops, search, if/elif — required for B2.1.1 traces too.</td></tr>
+<tr><td><strong>Print debugging</strong></td><td>Temporary <code>print(i, x)</code> inside loops or functions.</td><td>Quick check of “what is i here?”</td></tr>
+<tr><td><strong>Breakpoint / step</strong></td><td>Click gutter in VS Code/Cursor → red dot; Run → Start Debugging; Step Over (F10) and watch Variables.</td><td>Find the first line where a value becomes wrong.</td></tr>
+<tr><td><strong>Step-by-step execution</strong></td><td>Execute one statement at a time mentally or in a tracer.</td><td>MCQ “what is printed?” — Home trace panel &amp; Trace guide.</td></tr>
+</tbody></table>
+<p><strong>Trace table template</strong> (copy on paper for any loop):</p>
+<table class="study-table"><thead><tr><th>Line</th><th>i</th><th>total</th><th>Notes / output</th></tr></thead>
+<tbody>
+<tr><td>init</td><td>—</td><td>0</td><td></td></tr>
+<tr><td>loop body</td><td>0</td><td>…</td><td>update after each assignment</td></tr>
+<tr><td>loop body</td><td>1</td><td>…</td><td>stop when loop exits</td></tr>
+</tbody></table>
+<p><strong>Practice:</strong> Parts 1–8 worked traces; Home <strong>Trace guide</strong>; one failed MCQ redone with a blank table before reading the explanation.</p>
+
+<h3>B2.2.2 — 1D &amp; 2D lists (construct &amp; traverse)</h3>
+<p><strong>Dynamic list:</strong> Python lists (like Java ArrayLists) can grow and shrink — <code>append</code> / <code>pop</code> change length at run time. Fixed-size arrays are a Java idea; IB Python tasks use lists.</p>
+<table class="study-table"><thead><tr><th>Skill</th><th>Python</th></tr></thead>
+<tbody>
+<tr><td>1D list</td><td><code>nums = [3, 1, 4]</code> — index, slice, loop <code>for x in nums</code> or <code>for i in range(len(nums))</code></td></tr>
+<tr><td>Add / remove</td><td><code>append</code>, <code>extend</code>, <code>insert</code>, <code>remove</code>, <code>pop</code></td></tr>
+<tr><td>2D list</td><td>List of lists: <code>grid[r][c]</code> — row then column</td></tr>
+<tr><td>Build 2D safely</td><td><code>[[0]*cols for _ in range(rows)]</code> — not <code>[[0]*cols]*rows</code></td></tr>
+<tr><td>Traverse 2D</td><td>Nested loops: outer row, inner column</td></tr>
+</tbody></table>
+<pre class="mcq-code">def sum_grid(grid):
+    total = 0
+    for row in grid:
+        for cell in row:
+            total = total + cell
+    return total</pre>
+<p><strong>Practice:</strong> Part 5, Part 10, Home → Unit 13 (<code>sum_grid</code>, <code>make_grid</code>, print grid), Trace guide lists / 2D CFU.</p>
+
+<h3>B2.4.2 — Linear vs binary search (construct, trace, efficiency)</h3>
+<table class="study-table"><thead><tr><th></th><th>Linear</th><th>Binary</th></tr></thead>
+<tbody>
+<tr><td>Data</td><td>Any order</td><td><strong>Sorted</strong> (or indexed like a phone book by name)</td></tr>
+<tr><td>Worst comparisons</td><td>O(n) — every item once</td><td>O(log n) — halve each step</td></tr>
+<tr><td>Typical average</td><td>~n/2 comparisons if item exists</td><td>~log n each lookup</td></tr>
+<tr><td>Typical use</td><td>Small/unsorted list; search by field that is not the sort key</td><td>Large sorted list; repeated lookups on same data</td></tr>
+</tbody></table>
+<p><strong>Syllabus scenario (both directions):</strong></p>
+<ul>
+<li>Contacts sorted by <strong>name</strong> → find “Dee’s” phone: <strong>binary search</strong> on names (efficient).</li>
+<li>Same book, find <strong>who owns 555-0199</strong> when entries are not sorted by number → <strong>linear search</strong> (or rebuild index).</li>
+</ul>
+<p><strong>Construct:</strong> you should write both algorithms from memory — see Part 7–8 and Home → Constructs · search (<code>linear_search</code>, <code>binary_search</code>).</p>
+<p><strong>Practice:</strong> Part 7–9, MCQ Unit 1 &amp; 9, Trace guide search — trace until <code>low &gt; high</code> or return index.</p>
+
+<h3>Quick self-rating (honest check)</h3>
+<ol class="study-drill">
+<li>Can I fill a trace table (line + variables) for a 5-line loop without running code? (B2.1.1, B2.1.4)</li>
+<li>Can I trace <code>global count</code> across two function calls? (B2.1.1)</li>
+<li>Can I write slice + <code>for ch in s</code> + concat for a string task? (B2.1.2)</li>
+<li>Can I explain try/except/finally, ValueError input, FileNotFoundError, and why logic errors need a code fix? (B2.1.3)</li>
+<li>Have I used a breakpoint and Step Over at least once? (B2.1.4)</li>
+<li>Can I add/remove in 1D and write <code>sum_grid</code> with nested loops? (B2.2.2)</li>
+<li>Can I code <code>linear_search</code> and <code>binary_search</code> and pick which for name vs phone lookup? (B2.4.2)</li>
+</ol>
+<p>If any item is shaky, drill that part first before chasing a higher rubric band.</p>`,
   },
 ];
 

@@ -218,6 +218,21 @@ const LESSONS = [
     ],
   },
   {
+    id: "u9-global-counter",
+    unit: 9,
+    unitName: "Unit 9 · Functions",
+    title: "Global counter",
+    html: `<p>Module-level <code>count</code> starts at 0. Define <code>bump()</code> that uses <code>global count</code> and adds 1 each call. No parameters.</p>
+<p>IB B2.1.1 — mutating a global from inside a function.</p>`,
+    starter: "count = 0\n\ndef bump():\n    pass\n",
+    tests: [
+      {
+        kind: "assert",
+        code: "count = 0\nbump()\nbump()\nassert count == 2",
+      },
+    ],
+  },
+  {
     id: "u9-parse-age",
     unit: 9,
     unitName: "Unit 9 · Functions",
@@ -604,6 +619,21 @@ const LESSONS = [
         kind: "assert",
         code: "assert linear_search_sorted([0,1,2,3,4,5,6,7,8,9], 4) == (4, 5)",
       },
+    ],
+  },
+  {
+    id: "c-binary-idx",
+    unit: 91,
+    unitName: "Constructs · Search",
+    title: "Binary search index",
+    html: `<p>List <code>items</code> is sorted ascending. Define <code>binary_search(items, target)</code> that returns the <strong>index</strong> of <code>target</code>, or <code>-1</code> if missing.</p>
+<p>Use <code>low</code>, <code>high</code>, and <code>while low &lt;= high</code> with <code>mid = (low + high) // 2</code>. Matches IB B2.4.2 “construct”.</p>`,
+    starter: "def binary_search(items, target):\n    low = 0\n    high = len(items) - 1\n    return -1\n",
+    tests: [
+      { kind: "assert", code: "assert binary_search([2, 5, 8, 12, 16], 12) == 3" },
+      { kind: "assert", code: "assert binary_search([2, 5, 8, 12, 16], 6) == -1" },
+      { kind: "assert", code: "assert binary_search([5], 5) == 0" },
+      { kind: "assert", code: "assert binary_search([5], 3) == -1" },
     ],
   },
 ];
